@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,6 +32,7 @@ public class RoleController {
 	private final RoleService roleService;
 
 	@PostMapping
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<RoleResponseDTO> createRole(@Valid @RequestBody RoleRequestDTO requestDTO) {
 		Role role = mapToEntity(requestDTO);
 		Role savedRole = roleService.createRole(role);
@@ -38,6 +40,7 @@ public class RoleController {
 	}
 
 	@GetMapping
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<List<RoleResponseDTO>> getAllRoles() {
 		List<RoleResponseDTO> roles = roleService.getAllRoles().stream()
 				.map(this::mapToResponseDTO)
@@ -52,6 +55,7 @@ public class RoleController {
 	}
 
 	@PutMapping("/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<RoleResponseDTO> updateRole(@PathVariable Long id,
 														@Valid @RequestBody RoleRequestDTO requestDTO) {
 		Role role = mapToEntity(requestDTO);
@@ -60,6 +64,7 @@ public class RoleController {
 	}
 
 	@DeleteMapping("/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<Void> deleteRole(@PathVariable Long id) {
 		roleService.deleteRole(id);
 		return ResponseEntity.noContent().build();

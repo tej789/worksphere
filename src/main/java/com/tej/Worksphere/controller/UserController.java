@@ -1,5 +1,5 @@
 package com.tej.Worksphere.controller;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,6 +40,7 @@ public class UserController {
 	}
 
 	@GetMapping
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
 		List<UserResponseDTO> users = userService.getAllUsers().stream()
 				.map(this::mapToResponseDTO)
@@ -54,6 +55,7 @@ public class UserController {
 	}
 
 	@PutMapping("/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id,
 														@Valid @RequestBody UserRequestDTO requestDTO) {
 		User user = mapToEntity(requestDTO);
@@ -62,6 +64,7 @@ public class UserController {
 	}
 
 	@DeleteMapping("/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
 		userService.deleteUser(id);
 		return ResponseEntity.noContent().build();

@@ -50,7 +50,7 @@ public class User extends AuditableEntity {
 	private String phone;
 
 	@Builder.Default
-	@ManyToMany(fetch = FetchType.LAZY)
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(
 			name = "user_roles",
 			joinColumns = @JoinColumn(name = "user_id"),

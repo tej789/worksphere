@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,6 +38,7 @@ public class EmployeeController {
 	private final UserService userService;
 
 	@PostMapping
+	@PreAuthorize("hasAnyRole('ADMIN','HR')")
 	public ResponseEntity<EmployeeResponseDTO> createEmployee(@Valid @RequestBody EmployeeRequestDTO requestDTO) {
 		Employee employee = mapToEntity(requestDTO);
 		Employee savedEmployee = employeeService.createEmployee(employee);
@@ -44,6 +46,7 @@ public class EmployeeController {
 	}
 
 	@GetMapping
+	@PreAuthorize("hasAnyRole('ADMIN','HR')")
 	public ResponseEntity<List<EmployeeResponseDTO>> getAllEmployees() {
 		List<EmployeeResponseDTO> employees = employeeService.getAllEmployees().stream()
 				.map(this::mapToResponseDTO)
@@ -58,6 +61,7 @@ public class EmployeeController {
 	}
 
 	@PutMapping("/{id}")
+	@PreAuthorize("hasAnyRole('ADMIN','HR')")
 	public ResponseEntity<EmployeeResponseDTO> updateEmployee(@PathVariable Long id,
 																 @Valid @RequestBody EmployeeRequestDTO requestDTO) {
 		Employee employee = mapToEntity(requestDTO);
@@ -66,6 +70,7 @@ public class EmployeeController {
 	}
 
 	@DeleteMapping("/{id}")
+	@PreAuthorize("hasAnyRole('ADMIN','HR')")
 	public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
 		employeeService.deleteEmployee(id);
 		return ResponseEntity.noContent().build();

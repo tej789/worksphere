@@ -22,9 +22,25 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() ->
-                        new UsernameNotFoundException(
-                                "User not found: " + username));
+                        new UsernameNotFoundException("User not found"));
 
-        return new CustomUserDetails(user);
+        String[] authorities = user.getRoles()
+                .stream()
+                .map(role -> "ROLE_" + role.getName())
+                .toArray(String[]::new);
+
+        System.out.println("Role count = " + user.getRoles().size());
+
+        user.getRoles().forEach(role ->
+                System.out.println(role.getName()));        for (String authority : authorities) {
+            System.out.println(authority);
+        }
+
+        return org.springframework.security.core.userdetails.User
+                .builder()
+                .username(user.getUsername())
+                .password(user.getPassword())
+                .authorities(authorities)
+                .build();
     }
 }

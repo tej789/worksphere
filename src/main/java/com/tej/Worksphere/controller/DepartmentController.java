@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,6 +32,7 @@ public class DepartmentController {
 	private final DepartmentService departmentService;
 
 	@PostMapping
+	@PreAuthorize("hasAnyRole('ADMIN','HR')")
 	public ResponseEntity<DepartmentResponseDTO> createDepartment(@Valid @RequestBody DepartmentRequestDTO requestDTO) {
 		Department department = mapToEntity(requestDTO);
 		Department savedDepartment = departmentService.createDepartment(department);
@@ -38,6 +40,7 @@ public class DepartmentController {
 	}
 
 	@GetMapping
+	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<List<DepartmentResponseDTO>> getAllDepartments() {
 		List<DepartmentResponseDTO> departments = departmentService.getAllDepartments().stream()
 				.map(this::mapToResponseDTO)
@@ -46,12 +49,14 @@ public class DepartmentController {
 	}
 
 	@GetMapping("/{id}")
+	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<DepartmentResponseDTO> getDepartmentById(@PathVariable Long id) {
 		Department department = departmentService.getDepartmentById(id);
 		return ResponseEntity.ok(mapToResponseDTO(department));
 	}
 
 	@PutMapping("/{id}")
+	@PreAuthorize("hasAnyRole('ADMIN','HR')")
 	public ResponseEntity<DepartmentResponseDTO> updateDepartment(@PathVariable Long id,
 																	 @Valid @RequestBody DepartmentRequestDTO requestDTO) {
 		Department department = mapToEntity(requestDTO);
@@ -60,6 +65,7 @@ public class DepartmentController {
 	}
 
 	@DeleteMapping("/{id}")
+	@PreAuthorize("hasAnyRole('ADMIN','HR')")
 	public ResponseEntity<Void> deleteDepartment(@PathVariable Long id) {
 		departmentService.deleteDepartment(id);
 		return ResponseEntity.noContent().build();
