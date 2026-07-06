@@ -7,11 +7,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tej.Worksphere.entity.Payroll;
+import com.tej.Worksphere.exception.DuplicateResourceException;
 import com.tej.Worksphere.exception.ResourceNotFoundException;
 import com.tej.Worksphere.repository.EmployeeRepository;
 import com.tej.Worksphere.repository.PayrollRepository;
 import com.tej.Worksphere.service.PayrollService;
-
+import com.tej.Worksphere.exception.DuplicateResourceException;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -25,13 +26,21 @@ public class PayrollServiceImpl implements PayrollService {
 
     @Override
 public Payroll createPayroll(Payroll payroll) {
-
+System.out.println("CREATE PAYROLL SERVICE CALLED");
     employeeRepository.findById(payroll.getEmployee().getId())
             .orElseThrow(() ->
                     new ResourceNotFoundException(
                             "Employee not found with id: "
                                     + payroll.getEmployee().getId()));
 
+
+      payrollRepository.findByEmployeeIdAndSalaryMonth(
+        payroll.getEmployee().getId(),
+        payroll.getSalaryMonth())
+        .ifPresent(existing -> {
+            throw new DuplicateResourceException(
+                    "Payroll already exists for this employee and salary month.");
+        });                              
     BigDecimal netSalary = payroll.getBasicSalary()
             .add(payroll.getHra())
             .add(payroll.getAllowances())

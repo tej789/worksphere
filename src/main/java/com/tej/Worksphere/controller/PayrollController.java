@@ -32,7 +32,7 @@ public class PayrollController {
 @PreAuthorize("hasAnyRole('ADMIN','HR')")
 public ResponseEntity<PayrollResponseDTO> createPayroll(
         @Valid @RequestBody PayrollRequestDTO requestDTO) {
-
+System.out.println("CREATE PAYROLL CONTROLLER CALLED");
     Payroll payroll = mapToEntity(requestDTO);
 
     Payroll savedPayroll = payrollService.createPayroll(payroll);
