@@ -36,6 +36,19 @@ public class CustomUserDetailsService implements UserDetailsService {
             System.out.println(authority);
         }
 
+        System.out.println("Authorities returned to Spring:");
+org.springframework.security.core.userdetails.User springUser =
+        (org.springframework.security.core.userdetails.User)
+        org.springframework.security.core.userdetails.User
+                .builder()
+                .username(user.getUsername())
+                .password(user.getPassword())
+                .authorities(authorities)
+                .build();
+
+springUser.getAuthorities().forEach(a ->
+        System.out.println(a.getAuthority()));
+        
         return org.springframework.security.core.userdetails.User
                 .builder()
                 .username(user.getUsername())

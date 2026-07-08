@@ -1,7 +1,7 @@
 package com.tej.Worksphere.controller;
 
 import java.util.List;
-
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,8 +13,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import com.tej.Worksphere.dto.EmployeeRequestDTO;
 import com.tej.Worksphere.dto.EmployeeResponseDTO;
 import com.tej.Worksphere.entity.Department;
@@ -22,6 +25,7 @@ import com.tej.Worksphere.entity.Employee;
 import com.tej.Worksphere.entity.User;
 import com.tej.Worksphere.service.DepartmentService;
 import com.tej.Worksphere.service.EmployeeService;
+import com.tej.Worksphere.service.FileStorageService;
 import com.tej.Worksphere.service.UserService;
 
 import jakarta.validation.Valid;
@@ -36,7 +40,7 @@ public class EmployeeController {
 	private final EmployeeService employeeService;
 	private final DepartmentService departmentService;
 	private final UserService userService;
-
+private final FileStorageService fileStorageService;
 	@PostMapping
 	@PreAuthorize("hasAnyRole('ADMIN','HR')")
 	public ResponseEntity<EmployeeResponseDTO> createEmployee(@Valid @RequestBody EmployeeRequestDTO requestDTO) {
@@ -102,6 +106,7 @@ public class EmployeeController {
 				.employeeCode(employee.getEmployeeCode())
 				.firstName(employee.getFirstName())
 				.lastName(employee.getLastName())
+				.profileImage(employee.getProfileImage())
 				.gender(employee.getGender())
 				.dateOfBirth(employee.getDateOfBirth())
 				.hireDate(employee.getHireDate())
@@ -115,4 +120,27 @@ public class EmployeeController {
 				.updatedAt(employee.getUpdatedAt())
 				.build();
 	}
+
+	@PostMapping("/{id}/upload-photo")
+@PreAuthorize("hasAnyRole('ADMIN','HR')")
+public ResponseEntity<String> uploadProfilePhoto(
+        @PathVariable Long id,
+        @RequestParam("file") MultipartFile file) {
+
+    String fileName = fileStorageService.uploadProfileImage(id, file);
+
+    return ResponseEntity.ok("Profile photo uploaded successfully: " + fileName);
+}
+
+@GetMapping("/photo/{fileName}")
+public ResponseEntity<Resource> getProfilePhoto(
+        @PathVariable String fileName) {
+
+    Resource resource =
+            fileStorageService.loadProfileImage(fileName);
+
+    return ResponseEntity.ok()
+            .contentType(MediaType.IMAGE_JPEG)
+            .body(resource);
+}
 }

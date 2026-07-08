@@ -29,4 +29,5 @@ public class EmployeeResponseDTO {
 	private String username;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
+	private String profileImage;
 }

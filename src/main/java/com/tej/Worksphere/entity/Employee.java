@@ -56,4 +56,10 @@ public class Employee extends AuditableEntity {
 	@OneToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "user_id", nullable = false, unique = true)
 	private User user;
+
+	@Column(name = "profile_image", length = 255)
+private String profileImage;
+
+@Column(nullable = false, unique = true)
+private String email;
 }

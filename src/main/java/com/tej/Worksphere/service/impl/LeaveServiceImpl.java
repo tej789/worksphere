@@ -1,7 +1,7 @@
 package com.tej.Worksphere.service.impl;
 
 import java.util.List;
-
+import com.tej.Worksphere.service.EmailService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +24,7 @@ public class LeaveServiceImpl implements LeaveService {
     private final LeaveRepository leaveRepository;
     private final EmployeeRepository employeeRepository;
     private final UserRepository userRepository;
-
+    private final EmailService emailService;
 
   @Override
 public Leave createLeave(Leave leave) {
@@ -115,10 +115,21 @@ public Leave approveLeave(Long leaveId, Long approvedByUserId) {
    if (leave.getStatus() == LeaveStatus.APPROVED) {
     throw new IllegalArgumentException("Leave is already approved.");
 }
-    leave.setStatus(LeaveStatus.APPROVED);
-    leave.setApprovedBy(approvedBy);
+   leave.setStatus(LeaveStatus.APPROVED);
+leave.setApprovedBy(approvedBy);
 
-    return leaveRepository.save(leave);
+String email = leave.getEmployee().getEmail();
+
+if (email == null || email.isBlank()) {
+    throw new RuntimeException("Employee email is missing.");
+}
+
+emailService.sendLeaveApprovedEmail(
+        email,
+        leave.getEmployee().getFirstName(),
+        leave.getLeaveType());
+
+return leaveRepository.save(leave);
 }
 
 @Override
@@ -136,6 +147,11 @@ public Leave rejectLeave(Long leaveId, Long approvedByUserId) {
 }
     leave.setStatus(LeaveStatus.REJECTED);
     leave.setApprovedBy(approvedBy);
+    
+emailService.sendLeaveRejectedEmail(
+        leave.getEmployee().getEmail(),
+        leave.getEmployee().getFirstName(),
+        leave.getLeaveType());
 
     return leaveRepository.save(leave);
 }

@@ -92,11 +92,11 @@ public ResponseEntity<LeaveResponseDTO> updateLeave(
 }
 
 @PutMapping("/{leaveId}/approve/{userId}")
-@PreAuthorize("hasAnyRole('ADMIN','HR')")
+@PreAuthorize("isAuthenticated()")
 public ResponseEntity<LeaveResponseDTO> approveLeave(
         @PathVariable Long leaveId,
         @PathVariable Long userId) {
-
+System.out.println("approveLeave() method called");
     Leave leave = leaveService.approveLeave(leaveId, userId);
 
     return ResponseEntity.ok(mapToResponseDTO(leave));

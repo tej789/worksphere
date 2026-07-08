@@ -35,8 +35,16 @@ public class SecurityConfig {
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .anyRequest().authenticated()
+.requestMatchers(
+        "/api/auth/**",
+        "/v3/api-docs/**",
+        "/swagger-ui/**",
+        "/swagger-ui.html",
+        "/api/employees/photo/**",
+        "/api/email/**"
+).permitAll()        
+.requestMatchers("/api/leaves/**").permitAll()
+.anyRequest().authenticated()
                 );
 
 
